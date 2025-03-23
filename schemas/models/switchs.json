@@ -1,0 +1,26 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "The switch unique identifier"
+      },
+      "name": {
+        "type": "string",
+        "description": "The switch name"
+      },
+      "state": {
+        "type": "string",
+        "enum": ["on", "off"],
+        "description": "The switch state"
+      },
+      "location_id": {
+        "type": "string",
+        "description": "The related location identifier"
+      }
+    },
+    "required": ["id", "name", "state"]
+  }
+}

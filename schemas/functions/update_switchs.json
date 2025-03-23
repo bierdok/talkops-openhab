@@ -1,0 +1,22 @@
+{
+  "name": "update_switchs",
+  "description": "Update switchs",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["on", "off"],
+        "description": "The desired action"
+      },
+      "ids": {
+        "type": "array",
+        "description": "The switch identifiers",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["action", "ids"]
+  }
+}
