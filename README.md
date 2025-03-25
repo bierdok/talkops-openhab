@@ -1,5 +1,4 @@
 # TalkOps Extension: OpenHAB
-![Docker Pulls](https://img.shields.io/docker/pulls/bierdok/talkops-openhab)
 
 A TalkOps Extension made to work with [TalkOps](https://talkops.app).
 

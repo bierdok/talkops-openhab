@@ -1,5 +1,11 @@
 import { Extension, Parameter } from 'talkops'
-import pkg from './package.json' with { type: 'json' }
+import axios from 'axios'
+import yaml from 'js-yaml'
+import locationsModel from './schemas/models/locations.json' with { type: 'json' }
+import switchsModel from './schemas/models/switchs.json' with { type: 'json' }
+import shuttersModel from './schemas/models/shutters.json' with { type: 'json' }
+import updateSwitchsFunction from './schemas/functions/update_switchs.json' with { type: 'json' }
+import updateShuttersFunction from './schemas/functions/update_shutters.json' with { type: 'json' }
 
 const baseUrl = new Parameter('BASE_URL')
   .setDescription('The base URL of your OpenHAB server.')
@@ -14,8 +20,6 @@ const extension = new Extension()
   .setIcon(
     'https://play-lh.googleusercontent.com/PDnEr2ShVCnxVNK6-wlY3q1nGL39NM2-DMjfEZnAn_DcdsuKFULLjGcSkn_Wh_BXQj8',
   )
-  .setVersion(pkg.version)
-  .setDockerRepository('bierdok/talkops-openhab')
   .setFeatures([
     'Lights: Check status, turn on/off',
     'Shutters: Check status, open, close and stop',
@@ -34,16 +38,6 @@ const defaultInstructions = `
 Currently, there is no connected devices.
 Your sole task is to ask the user to install one or more connected devices in the home before proceeding.
 `
-
-import axios from 'axios'
-import yaml from 'js-yaml'
-
-import locationsModel from './schemas/models/locations.json' with { type: 'json' }
-import switchsModel from './schemas/models/switchs.json' with { type: 'json' }
-import shuttersModel from './schemas/models/shutters.json' with { type: 'json' }
-
-import updateSwitchsFunction from './schemas/functions/update_switchs.json' with { type: 'json' }
-import updateShuttersFunction from './schemas/functions/update_shutters.json' with { type: 'json' }
 
 async function getSystemInfo() {
   try {
