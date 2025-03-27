@@ -10,8 +10,11 @@ import updateShuttersFunction from './schemas/functions/update_shutters.json' wi
 const baseUrl = new Parameter('BASE_URL')
   .setDescription('The base URL of your OpenHAB server.')
   .setPossibleValues(['http://openhab:8080', 'https://openhab.mydomain.net'])
+  .setType('url')
 
-const apiToken = new Parameter('API_TOKEN').setDescription('The copied API token.')
+const apiToken = new Parameter('API_TOKEN')
+  .setDescription('The copied API token.')
+  .setType('password')
 
 const extension = new Extension()
   .setName('OpenHAB')
@@ -134,7 +137,6 @@ async function refresh() {
 
   setTimeout(refresh, 5000)
 }
-refresh()
 
 extension.setFunctions([
   async function update_switchs(action, ids) {
@@ -169,3 +171,5 @@ extension.setFunctions([
     }
   },
 ])
+
+extension.setBootstrap(refresh)

@@ -5,13 +5,11 @@
     "Shutters: Check status, open, close and stop"
   ],
   "icon": "https://play-lh.googleusercontent.com/PDnEr2ShVCnxVNK6-wlY3q1nGL39NM2-DMjfEZnAn_DcdsuKFULLjGcSkn_Wh_BXQj8",
-  "installationSteps": [
-    "[Generate an API token](https://www.openhab.org/docs/configuration/apitokens.html#generate-an-api-token)"
-  ],
   "name": "OpenHAB",
   "sdk": {
     "name": "nodejs",
-    "version": "2.5.0"
+    "version": "2.6.0"
   },
+  "softwareVersion": null,
   "website": "https://www.openhab.org/"
 }
