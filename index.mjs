@@ -19,7 +19,7 @@ const apiToken = new Parameter('API_TOKEN')
 const extension = new Extension()
   .setName('OpenHAB')
   .setWebsite('https://www.openhab.org/')
-  .setCategory('Home Automation')
+  .setCategory('home_automation')
   .setIcon(
     'https://play-lh.googleusercontent.com/PDnEr2ShVCnxVNK6-wlY3q1nGL39NM2-DMjfEZnAn_DcdsuKFULLjGcSkn_Wh_BXQj8',
   )
