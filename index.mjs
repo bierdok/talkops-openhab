@@ -51,8 +51,7 @@ async function getSystemInfo() {
     })
     return response.data.systemInfo
   } catch (err) {
-    extension.clearErrors()
-    extension.addError(err.message)
+    console.error(err.message)
     return {}
   }
 }
@@ -66,8 +65,7 @@ async function getItems() {
     })
     return response.data
   } catch (err) {
-    extension.clearErrors()
-    extension.addError(err.message)
+    console.error(err.message)
     return []
   }
 }
@@ -76,7 +74,6 @@ async function refresh() {
   const locations = []
   const switchs = []
   const shutters = []
-  extension.clearErrors()
   const systemInfo = await getSystemInfo()
   extension.setSoftwareVersion(systemInfo.osVersion)
   for (const item of await getItems()) {
