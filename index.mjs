@@ -1,11 +1,12 @@
 import { Extension, Parameter } from 'talkops'
 import axios from 'axios'
 import yaml from 'js-yaml'
-import locationsModel from './schemas/models/locations.json' with { type: 'json' }
-import switchsModel from './schemas/models/switchs.json' with { type: 'json' }
-import shuttersModel from './schemas/models/shutters.json' with { type: 'json' }
-import updateSwitchsFunction from './schemas/functions/update_switchs.json' with { type: 'json' }
-import updateShuttersFunction from './schemas/functions/update_shutters.json' with { type: 'json' }
+
+import locationsModel from './src/models/locations.json' with { type: 'json' }
+import switchsModel from './src/models/switchs.json' with { type: 'json' }
+import shuttersModel from './src/models/shutters.json' with { type: 'json' }
+import updateSwitchsFunction from './src/functions/update_switchs.json' with { type: 'json' }
+import updateShuttersFunction from './src/functions/update_shutters.json' with { type: 'json' }
 
 const baseUrl = new Parameter('BASE_URL')
   .setDescription('The base URL of your OpenHAB server.')
@@ -163,7 +164,6 @@ extension.setFunctions([
       }
       return action === 'stop' ? 'Done.' : 'In progress.'
     } catch (err) {
-      console.log(err)
       return `Error: ${err.message}`
     }
   },
