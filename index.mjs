@@ -32,6 +32,7 @@ const extension = new Extension()
     '[Generate an API token](https://www.openhab.org/docs/configuration/apitokens.html#generate-an-api-token)',
   ])
   .setParameters([baseUrl, apiToken])
+  .start()
 
 const baseInstructions = `
 You are a home automation assistant, focused solely on managing connected devices in the home.
