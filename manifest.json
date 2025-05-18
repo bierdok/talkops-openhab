@@ -11,6 +11,6 @@
     "name": "nodejs",
     "version": "2.15.3"
   },
-  "softwareVersion": "6.6.51+rpt-rpi-2712",
+  "softwareVersion": null,
   "website": "https://www.openhab.org/"
 }
