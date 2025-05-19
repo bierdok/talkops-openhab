@@ -11,6 +11,5 @@
     "name": "nodejs",
     "version": "2.15.4"
   },
-  "softwareVersion": null,
   "website": "https://www.openhab.org/"
 }
