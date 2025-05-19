@@ -134,7 +134,7 @@ async function refresh() {
   }
   extension.setFunctionSchemas(functionSchemas)
 
-  setTimeout(refresh, 5000)
+  setTimeout(refresh, 60000)
 }
 
 extension.setFunctions([
