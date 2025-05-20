@@ -32,6 +32,38 @@ const extension = new Extension()
     '[Generate an API token](https://www.openhab.org/docs/configuration/apitokens.html#generate-an-api-token)',
   ])
   .setParameters([baseUrl, apiToken])
+  .setFunctions([
+    async function update_switchs(action, ids) {
+      try {
+        for (const id of ids) {
+          await axios.post(`${baseUrl.getValue()}/rest/items/${id}`, action.toUpperCase(), {
+            headers: {
+              Authorization: `Bearer ${apiToken.getValue()}`,
+              'content-type': 'text/plain',
+            },
+          })
+        }
+        return 'Done.'
+      } catch (err) {
+        return `Error: ${err.message}`
+      }
+    },
+    async function update_shutters(action, ids) {
+      try {
+        for (const id of ids) {
+          await axios.post(`${baseUrl.getValue()}/rest/items/${id}`, action.toUpperCase(), {
+            headers: {
+              Authorization: `Bearer ${apiToken.getValue()}`,
+              'content-type': 'text/plain',
+            },
+          })
+        }
+        return action === 'stop' ? 'Done.' : 'In progress.'
+      } catch (err) {
+        return `Error: ${err.message}`
+      }
+    },
+  ])
   .start()
 
 const baseInstructions = `
@@ -45,129 +77,87 @@ Your sole task is to ask the user to install one or more connected devices in th
 `
 
 async function getSystemInfo() {
-  try {
-    const response = await axios.get(`${baseUrl.getValue()}/rest/systeminfo`, {
-      headers: {
-        Authorization: `Bearer ${apiToken.getValue()}`,
-      },
-    })
-    return response.data.systemInfo
-  } catch (err) {
-    console.error(err.message)
-    return {}
-  }
+  const response = await axios.get(`${baseUrl.getValue()}/rest/systeminfo`, {
+    headers: {
+      Authorization: `Bearer ${apiToken.getValue()}`,
+    },
+  })
+  return response.data.systemInfo
 }
 
 async function getItems() {
+  const response = await axios.get(`${baseUrl.getValue()}/rest/items`, {
+    headers: {
+      Authorization: `Bearer ${apiToken.getValue()}`,
+    },
+  })
+  return response.data
+}
+
+let updateMemoryTimeout = null
+async function updateMemory() {
+  updateMemoryTimeout && clearTimeout(updateMemoryTimeout)
   try {
-    const response = await axios.get(`${baseUrl.getValue()}/rest/items`, {
-      headers: {
-        Authorization: `Bearer ${apiToken.getValue()}`,
-      },
-    })
-    return response.data
+    const locations = []
+    const switchs = []
+    const shutters = []
+    const systemInfo = await getSystemInfo()
+    extension.setSoftwareVersion(systemInfo.osVersion)
+    for (const item of await getItems()) {
+      if (item.type === 'Group' && item.tags.includes('Location')) {
+        locations.push({
+          id: item.name,
+          name: item.label,
+          location_id: item.groupNames.length ? item.groupNames[0] : null,
+        })
+      }
+      if (item.type === 'Switch' && item.tags.includes('Equipment')) {
+        switchs.push({
+          id: item.name,
+          name: item.label,
+          state: item.state.toLowerCase(),
+          location_id: item.groupNames.length ? item.groupNames[0] : null,
+        })
+      }
+      if (item.type === 'Rollershutter' && item.tags.includes('Equipment')) {
+        shutters.push({
+          id: item.name,
+          name: item.label,
+          state: item.state === '0' ? 'opened' : 'closed',
+          location_id: item.groupNames.length ? item.groupNames[0] : null,
+        })
+      }
+    }
+    const instructions = [baseInstructions]
+    if (!switchs.length && !shutters.length) {
+      instructions.push(defaultInstructions)
+    } else {
+      instructions.push('``` yaml')
+      instructions.push(
+        yaml.dump({
+          locationsModel,
+          switchsModel,
+          shuttersModel,
+          locations,
+          switchs,
+          shutters,
+        }),
+      )
+      instructions.push('```')
+    }
+    extension.setInstructions(instructions.join('\n'))
+    const functionSchemas = []
+    if (switchs.length) {
+      functionSchemas.push(updateSwitchsFunction)
+    }
+    if (shutters.length) {
+      functionSchemas.push(updateShuttersFunction)
+    }
+    extension.setFunctionSchemas(functionSchemas)
   } catch (err) {
     console.error(err.message)
-    return []
   }
+  updateMemoryTimeout = setTimeout(updateMemory, 60000)
 }
 
-async function refresh() {
-  const locations = []
-  const switchs = []
-  const shutters = []
-  const systemInfo = await getSystemInfo()
-  extension.setSoftwareVersion(systemInfo.osVersion)
-  for (const item of await getItems()) {
-    if (item.type === 'Group' && item.tags.includes('Location')) {
-      locations.push({
-        id: item.name,
-        name: item.label,
-        location_id: item.groupNames.length ? item.groupNames[0] : null,
-      })
-    }
-    if (item.type === 'Switch' && item.tags.includes('Equipment')) {
-      switchs.push({
-        id: item.name,
-        name: item.label,
-        state: item.state.toLowerCase(),
-        location_id: item.groupNames.length ? item.groupNames[0] : null,
-      })
-    }
-    if (item.type === 'Rollershutter' && item.tags.includes('Equipment')) {
-      shutters.push({
-        id: item.name,
-        name: item.label,
-        state: item.state === '0' ? 'opened' : 'closed',
-        location_id: item.groupNames.length ? item.groupNames[0] : null,
-      })
-    }
-  }
-
-  const instructions = [baseInstructions]
-
-  if (!switchs.length && !shutters.length) {
-    instructions.push(defaultInstructions)
-  } else {
-    instructions.push('``` yaml')
-    instructions.push(
-      yaml.dump({
-        locationsModel,
-        switchsModel,
-        shuttersModel,
-        locations,
-        switchs,
-        shutters,
-      }),
-    )
-    instructions.push('```')
-  }
-
-  extension.setInstructions(instructions.join('\n'))
-
-  const functionSchemas = []
-  if (switchs.length) {
-    functionSchemas.push(updateSwitchsFunction)
-  }
-  if (shutters.length) {
-    functionSchemas.push(updateShuttersFunction)
-  }
-  extension.setFunctionSchemas(functionSchemas)
-
-  setTimeout(refresh, 60000)
-}
-
-extension.setFunctions([
-  async function update_switchs(action, ids) {
-    try {
-      for (const id of ids) {
-        await axios.post(`${baseUrl.getValue()}/rest/items/${id}`, action.toUpperCase(), {
-          headers: {
-            Authorization: `Bearer ${apiToken.getValue()}`,
-            'content-type': 'text/plain',
-          },
-        })
-      }
-      return 'Done.'
-    } catch (err) {
-      return `Error: ${err.message}`
-    }
-  },
-  async function update_shutters(action, ids) {
-    try {
-      for (const id of ids) {
-        await axios.post(`${baseUrl.getValue()}/rest/items/${id}`, action.toUpperCase(), {
-          headers: {
-            Authorization: `Bearer ${apiToken.getValue()}`,
-            'content-type': 'text/plain',
-          },
-        })
-      }
-      return action === 'stop' ? 'Done.' : 'In progress.'
-    } catch (err) {
-      return `Error: ${err.message}`
-    }
-  },
-])
-
-extension.on('boot', refresh)
+extension.on('boot', updateMemory)
