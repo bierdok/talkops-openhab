@@ -76,15 +76,6 @@ Currently, there is no connected devices.
 Your sole task is to ask the user to install one or more connected devices in the home before proceeding.
 `
 
-async function getSystemInfo() {
-  const response = await axios.get(`${baseUrl.getValue()}/rest/systeminfo`, {
-    headers: {
-      Authorization: `Bearer ${apiToken.getValue()}`,
-    },
-  })
-  return response.data.systemInfo
-}
-
 async function getItems() {
   const response = await axios.get(`${baseUrl.getValue()}/rest/items`, {
     headers: {
@@ -101,8 +92,6 @@ async function updateMemory() {
     const locations = []
     const switchs = []
     const shutters = []
-    const systemInfo = await getSystemInfo()
-    extension.setSoftwareVersion(systemInfo.osVersion)
     for (const item of await getItems()) {
       if (item.type === 'Group' && item.tags.includes('Location')) {
         locations.push({

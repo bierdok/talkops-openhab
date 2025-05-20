@@ -9,8 +9,7 @@
   "name": "OpenHAB",
   "sdk": {
     "name": "nodejs",
-    "version": "2.15.6"
+    "version": "2.16.0"
   },
-  "softwareVersion": "6.6.51+rpt-rpi-2712",
   "website": "https://www.openhab.org/"
 }
