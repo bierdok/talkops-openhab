@@ -151,3 +151,4 @@ async function updateMemory() {
 }
 
 extension.on('boot', updateMemory)
+extension.on('enable', updateMemory)
